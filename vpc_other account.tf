@@ -1,6 +1,8 @@
 resource "aws_vpc" "test_lab" {
-  provider   = aws.at-root
-  cidr_block = "10.127.0.0/16"
+  provider             = aws.at-root
+  cidr_block           = "10.127.0.0/16"
+  enable_dns_support   = true
+  enable_dns_hostnames = true
 
   tags = {
     Name = "vpc-lab-baas"
@@ -132,7 +134,7 @@ resource "aws_vpc_endpoint" "ssm" {
   vpc_id             = aws_vpc.test_lab.id
   service_name       = "com.amazonaws.us-west-2.ssmmessages"
   vpc_endpoint_type  = "Interface"
-  subnet_ids         = [aws_subnet.private[0].id]
+  subnet_ids         = [aws_subnet.private_lab[0].id]
   security_group_ids = [aws_security_group.vpc_endpoint_sg.id]
 
   private_dns_enabled = true
@@ -179,7 +181,7 @@ resource "aws_vpc_endpoint" "ebs" {
   vpc_id             = aws_vpc.test_lab.id
   service_name       = "com.amazonaws.us-west-2.ebs"
   vpc_endpoint_type  = "Interface"
-  subnet_ids         = [aws_subnet.private[0].id]
+  subnet_ids         = [aws_subnet.private_lab[0].id]
   security_group_ids = [aws_security_group.vpc_endpoint_sg.id]
 
   private_dns_enabled = true
@@ -210,13 +212,13 @@ resource "aws_security_group" "vpc_endpoint_sg" {
   provider    = aws.at-root
   name        = "vpc-endpoint-sg"
   description = "Security group for VPC interface endpoints"
-  vpc_id      = aws_vpc.main.id
+  vpc_id      = aws_vpc.test_lab.id
 
   ingress {
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
-    cidr_blocks = [aws_vpc.main.cidr_block]
+    cidr_blocks = [aws_vpc.test_lab.cidr_block]
   }
 
   egress {
