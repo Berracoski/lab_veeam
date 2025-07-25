@@ -91,4 +91,4 @@ MIT License
 
 *For more details on Veeam Backup for AWS and AWS cross-account backup setups, see:*
 
-- [Veeam Backup for AWS official documentation](https://www.veeam.com/aws-backup.html)
+- [Veeam Backup for AWS official documentation]([https://www.veeam.com/aws-backup.html](https://helpcenter.veeam.com/docs/vbaws/guide/welcome.html))
