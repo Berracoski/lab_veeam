@@ -91,6 +91,4 @@ MIT License
 
 *For more details on Veeam Backup for AWS and AWS cross-account backup setups, see:*
 
-- [Veeam Backup for AWS Terraform example repo](https://github.com/VeeamHub/terraform-provider-veeam)  
-- [AWS Cross-account backup documentation](https://docs.aws.amazon.com/aws-backup/latest/devguide/create-cross-account-backup.html)
 - [Veeam Backup for AWS official documentation](https://www.veeam.com/aws-backup.html)
