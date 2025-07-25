@@ -1,62 +1,96 @@
 # lab_veeam
 
-This repository contains resources, scripts, or configurations related to setting up and managing a Veeam backup lab environment, including Virtual Labs for verification and recovery testing.
+This repository automates the deployment of a cross-account Veeam Backup for AWS environment using Terraform. It creates and configures two Amazon VPCs — one in the backup account and another in a secondary account — enabling secure backup workflows between AWS accounts.
 
 ## Overview
 
-Veeam Virtual Labs provide an isolated virtual environment that mirrors your production network to verify backup recoverability, run application tests, and perform staged restores without impacting the production environment. This lab emulates production-like conditions securely and allows automated backup verifications (SureBackup), On-Demand Sandbox testing, and more.
+The Terraform scripts in this repo provision:
 
-## Getting Started
+- Two isolated VPCs in separate AWS accounts (Backup Account and Secondary Account).
+- The secondary account’s VPC restricts access to private subnets only and configures endpoints for selective AWS APIs for secure connectivity.
+- IAM roles and policies necessary for cross-account backup permissions between the two environments.
+- Network configuration ensuring that backup traffic remains isolated and secure.
 
-These instructions will guide you through setting up and using the lab environment based on Veeam Backup & Replication products.
+This setup leverages Veeam Backup for AWS to perform automated, compliant backup and recovery of workloads across AWS accounts, enhancing disaster recovery and operational resilience.
 
-### Prerequisites
+## Features
 
-- VMware vSphere environment (ESXi hosts or vCenter)
-- Veeam Backup & Replication installed and configured
-- Access to a datastore and hosts for lab deployment
-- Network permissions to create isolated virtual networks
+- Automated creation of AWS VPCs via Terraform.
+- Cross-account IAM role trust and permissions configured for Veeam Backup.
+- Restricted subnet access in the secondary account, allowing only necessary AWS API endpoint traffic.
+- Infrastructure-as-code approach for repeatable and auditable environment setup.
 
-### Installation
+## Prerequisites
 
-Clone the repository:
+- AWS accounts for the Backup and Secondary environments.
+- Terraform installed locally (version compatible with AWS provider).
+- AWS CLI configured with appropriate credentials for both accounts.
+- Veeam Backup for AWS license and access to configure backup jobs.
+- Permissions to create VPCs, endpoints, IAM roles, and policies in both AWS accounts.
+
+## Deployment Instructions
+
+1. Clone the repository:
 ```bash
 git clone https://github.com/Berracoski/lab_veeam.git
 cd lab_veeam
 ```
 
-Review the scripts and configuration files included to deploy Virtual Labs, proxy appliances, and application groups as part of your SureBackup or recovery verification setup.
+2. Review and update `terraform.tfvars` and variable files with your AWS account IDs, regions, Veeam license key, and configuration preferences.
 
-### Usage
+3. Authenticate AWS CLI profiles or environment variables for both Backup and Secondary accounts as required.
 
-- Use the provided scripts/configs to create or manage Veeam Virtual Labs.
-- Run backup verification jobs leveraging the isolated lab environment.
-- Simulate recovery and failover scenarios safely without disrupting production workloads.
-- Customize network isolation and IP mappings according to your environment.
+4. Initialize Terraform:
+```bash
+terraform init
+```
+5. Apply the Terraform configuration:
+```bash
+terraform apply
+```
 
-Refer to official Veeam documentation and your local setup for detailed steps on deploying and configuring virtual labs, networking, and proxy appliances.
+6. Verify the creation of VPCs, endpoints, and IAM roles in both accounts.
+
+7. Configure Veeam Backup for AWS using the deployed infrastructure to enable cross-account backups.
+
+## Usage
+
+Use this infrastructure to:
+
+- Deploy isolated environments for Veeam backup operations with security best practices.
+- Manage backups of AWS workloads across multiple accounts.
+- Test recovery and compliance scenarios without impacting production workloads.
+
+Refer to official Veeam Backup for AWS documentation for configuring backup jobs and leveraging the deployed infrastructure.
 
 ## .gitignore
 
-The repository includes a `.gitignore` file to exclude system files and environment-specific folders such as:
+This repository’s `.gitignore` excludes typical system files and Terraform state backups:
 
-- OS files like `.DS_Store` and `Thumbs.db`
+- `.terraform/`
+- `*.tfstate`
+- `.DS_Store`
+- `Thumbs.db`
 - Log files
-- Any other temporary or node-related modules if applicable
 
 ## Contributing
 
+Contributions, issues, and feature requests are welcome.
+
 1. Fork the repository.
-2. Create your feature branch (`git checkout -b feature-name`).
-3. Commit your changes (`git commit -m 'Add feature description'`).
-4. Push to your branch (`git push origin feature-name`).
-5. Open a pull request.
+2. Create your feature branch (`git checkout -b feature-xyz`).
+3. Commit your changes (`git commit -m 'Add new feature'`).
+4. Push to your branch (`git push origin feature-xyz`).
+5. Open a Pull Request.
 
 ## License
 
-Specify your licensing terms here (e.g., MIT License, Proprietary, etc.).
+Specify your license here (e.g., MIT License).
 
 ---
 
-*For more detailed instructions on creating and managing Veeam Virtual Labs, visit the official Veeam user guide:  
-https://helpcenter.veeam.com/docs/backup/vsphere/virtual_lab.html*
+*For more details on Veeam Backup for AWS and AWS cross-account backup setups, see:*
+
+- [Veeam Backup for AWS Terraform example repo](https://github.com/VeeamHub/terraform-provider-veeam)  
+- [AWS Cross-account backup documentation](https://docs.aws.amazon.com/aws-backup/latest/devguide/create-cross-account-backup.html)
+- [Veeam Backup for AWS official documentation](https://www.veeam.com/aws-backup.html)
