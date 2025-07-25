@@ -85,7 +85,7 @@ Contributions, issues, and feature requests are welcome.
 
 ## License
 
-Specify your license here (e.g., MIT License).
+MIT License
 
 ---
 
