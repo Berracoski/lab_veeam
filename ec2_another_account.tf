@@ -65,10 +65,10 @@ resource "aws_security_group" "worker_lab" {
   vpc_id      = aws_vpc.test_lab.id
 
   egress {
-    from_port       = 443   # or 0 for all ports
-    to_port         = 443   # or 0 for all ports
-    protocol        = "tcp" # or "-1" for all protocols
-    security_groups = [aws_security_group.vpc_endpoint_sg.id]
-    description     = "Allow outbound to VPC Endpoint SG on port 443"
+    from_port   = 0    # or 0 for all ports
+    to_port     = 0    # or 0 for all ports
+    protocol    = "-1" # or "-1" for all protocols
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "Allow outbound on all ports"
   }
 }
