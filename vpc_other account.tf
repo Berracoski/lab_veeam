@@ -132,7 +132,7 @@ resource "aws_vpc_endpoint" "s3_lab" {
 resource "aws_vpc_endpoint" "ssm" {
   provider           = aws.at-root
   vpc_id             = aws_vpc.test_lab.id
-  service_name       = "com.amazonaws.us-west-2.ssmmessages"
+  service_name       = "com.amazonaws.us-west-2.ssm"
   vpc_endpoint_type  = "Interface"
   subnet_ids         = [aws_subnet.private_lab[0].id]
   security_group_ids = [aws_security_group.vpc_endpoint_sg.id]
@@ -141,6 +141,21 @@ resource "aws_vpc_endpoint" "ssm" {
 
   tags = {
     Name = "ssm-interface-endpoint"
+  }
+}
+
+resource "aws_vpc_endpoint" "ssm_messages" {
+  provider           = aws.at-root
+  vpc_id             = aws_vpc.test_lab.id
+  service_name       = "com.amazonaws.us-west-2.ssmmessages"
+  vpc_endpoint_type  = "Interface"
+  subnet_ids         = [aws_subnet.private_lab[0].id]
+  security_group_ids = [aws_security_group.vpc_endpoint_sg.id]
+
+  private_dns_enabled = true
+
+  tags = {
+    Name = "ssm-messages-interface-endpoint"
   }
 }
 
