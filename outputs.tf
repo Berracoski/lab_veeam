@@ -13,3 +13,8 @@ output "cross_account_role_arn" {
   description = "The ARN of the cross-account role."
   value       = aws_iam_role.veeam_for_aws_cross_account_role.arn
 }
+
+output "db_endpoint" {
+  description = "The endpoint address of the RDS MySQL instance"
+  value       = aws_db_instance.mysql_instance.endpoint
+}

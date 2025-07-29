@@ -19,12 +19,13 @@ data "aws_ami" "ubuntu_2404" {
 
 ## Veeam test instance with KMS encription
 resource "aws_instance" "veeam_lab" {
-  provider               = aws.at-root
-  ami                    = data.aws_ami.ubuntu_2404.id
-  instance_type          = "t3.micro"
-  key_name               = "veeam-test"
-  subnet_id              = aws_subnet.private_lab[1].id
-  vpc_security_group_ids = [aws_security_group.veeam_lab.id]
+  provider                    = aws.at-root
+  ami                         = data.aws_ami.ubuntu_2404.id
+  instance_type               = "t3.micro"
+  key_name                    = "veeam-test"
+  subnet_id                   = aws_subnet.public_lab[1].id
+  vpc_security_group_ids      = [aws_security_group.veeam_lab.id]
+  associate_public_ip_address = true
   tags = {
     Name = "veeam-lab"
   }
