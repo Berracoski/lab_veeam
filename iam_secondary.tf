@@ -19,7 +19,7 @@ resource "aws_iam_role" "veeam_for_aws_cross_account_role" {
         "Effect" : "Allow",
         "Action" : "sts:AssumeRole",
         "Principal" : {
-          "AWS" : "arn:aws:iam::528775625753:role/aws-appliance-veeam-VeeamImpersonationRoleV1-AI9KMCR6T5BK"
+          "AWS" : "arn:aws:iam::528775625753:role/aws-appliance-veeam-VeeamImpersonationRoleV1-AI9KMCR6T5BK" ## Replace with Veeam created role
         }
       }
     ]
