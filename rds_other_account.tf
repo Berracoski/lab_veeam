@@ -11,13 +11,12 @@ resource "aws_db_subnet_group" "private_subnet_group" {
 
 # Generate a random secure password for the RDS admin user
 resource "random_password" "rds_admin_password" {
-  length           = 16
-  special          = true
-  override_special = "!@#%_"
-  min_upper        = 2
-  min_lower        = 4
-  min_numeric      = 2
-  min_special      = 1
+  length  = 16
+  special = false
+
+  min_upper   = 2
+  min_lower   = 4
+  min_numeric = 2
 }
 
 # Create an AWS Secrets Manager secret to store the RDS admin credentials
@@ -68,23 +67,47 @@ resource "aws_security_group" "rds_sg" {
   }
 }
 
-# Create the RDS MySQL instance inside private subnets
-resource "aws_db_instance" "mysql_instance" {
+# # Create the RDS MySQL instance inside private subnets
+# resource "aws_db_instance" "mysql_instance" {
+#   provider               = aws.at-root
+#   allocated_storage      = 20
+#   engine                 = "mysql"
+#   engine_version         = "8.0"
+#   instance_class         = "db.t3.micro"
+#   db_name                = "mydatabase"
+#   username               = "admin"
+#   password               = random_password.rds_admin_password.result
+#   parameter_group_name   = "default.mysql8.0"
+#   skip_final_snapshot    = true
+#   publicly_accessible    = false # Not publicly accessible
+#   vpc_security_group_ids = [aws_security_group.rds_sg.id]
+#   db_subnet_group_name   = aws_db_subnet_group.private_subnet_group.name
+#   identifier             = "my-rds-mysql-instance"
+#
+#   tags = {
+#     Name = "MyPrivateMySQLRDS"
+#   }
+# }
+
+# Create the RDS PostgreSQL instance inside private subnets
+resource "aws_db_instance" "postgres_instance" {
   provider               = aws.at-root
   allocated_storage      = 20
-  engine                 = "mysql"
-  engine_version         = "8.0"
+  engine                 = "postgres"
+  engine_version         = "15" # Latest stable PostgreSQL version; adjust as needed
   instance_class         = "db.t3.micro"
   db_name                = "mydatabase"
   username               = "admin"
   password               = random_password.rds_admin_password.result
-  parameter_group_name   = "default.mysql8.0"
+  parameter_group_name   = "default.postgres15"
   skip_final_snapshot    = true
-  publicly_accessible    = false # Not publicly accessible
+  publicly_accessible    = false
   vpc_security_group_ids = [aws_security_group.rds_sg.id]
   db_subnet_group_name   = aws_db_subnet_group.private_subnet_group.name
+  identifier             = "my-rds-postgres-instance"
 
   tags = {
-    Name = "MyPrivateMySQLRDS"
+    Name = "MyPrivatePostgresRDS"
   }
 }
+

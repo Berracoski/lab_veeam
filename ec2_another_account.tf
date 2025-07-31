@@ -31,6 +31,7 @@ resource "aws_instance" "veeam_lab" {
   }
 
   root_block_device {
+    volume_type = "gp3"
     volume_size = 32   # Set desired disk size in GB
     encrypted   = true # Enable encryption
     kms_key_id  = null # Omit or set to null for default AWS KMS key

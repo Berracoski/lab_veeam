@@ -15,6 +15,6 @@ output "cross_account_role_arn" {
 }
 
 output "db_endpoint" {
-  description = "The endpoint address of the RDS MySQL instance"
-  value       = aws_db_instance.mysql_instance.endpoint
+  description = "The endpoint address of the RDS PostgreSQL instance"
+  value       = aws_db_instance.postgres_instance.endpoint
 }
