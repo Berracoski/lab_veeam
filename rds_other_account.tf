@@ -36,7 +36,7 @@ resource "aws_secretsmanager_secret_version" "rds_admin_version" {
 
   # Store a JSON string with username and password in secret_string
   secret_string = jsonencode({
-    username = "admin"
+    username = "mydbadmin"
     password = random_password.rds_admin_password.result
   })
 }
@@ -51,8 +51,8 @@ resource "aws_security_group" "rds_sg" {
   vpc_id      = aws_vpc.test_lab.id
 
   ingress {
-    from_port   = 3306
-    to_port     = 3306
+    from_port   = 5432
+    to_port     = 5432
     protocol    = "tcp"
     cidr_blocks = [aws_vpc.test_lab.cidr_block] # Or specify private subnet CIDRs if more restrictive
     # Alternatively, you can allow security group id:
@@ -75,7 +75,7 @@ resource "aws_security_group" "rds_sg" {
 #   engine_version         = "8.0"
 #   instance_class         = "db.t3.micro"
 #   db_name                = "mydatabase"
-#   username               = "admin"
+#   username               = "mydbadmin"
 #   password               = random_password.rds_admin_password.result
 #   parameter_group_name   = "default.mysql8.0"
 #   skip_final_snapshot    = true
@@ -89,25 +89,24 @@ resource "aws_security_group" "rds_sg" {
 #   }
 # }
 
-# Create the RDS PostgreSQL instance inside private subnets
-resource "aws_db_instance" "postgres_instance" {
-  provider               = aws.at-root
-  allocated_storage      = 20
-  engine                 = "postgres"
-  engine_version         = "15" # Latest stable PostgreSQL version; adjust as needed
-  instance_class         = "db.t3.micro"
-  db_name                = "mydatabase"
-  username               = "admin"
-  password               = random_password.rds_admin_password.result
-  parameter_group_name   = "default.postgres15"
-  skip_final_snapshot    = true
-  publicly_accessible    = false
-  vpc_security_group_ids = [aws_security_group.rds_sg.id]
-  db_subnet_group_name   = aws_db_subnet_group.private_subnet_group.name
-  identifier             = "my-rds-postgres-instance"
+# # Create the RDS PostgreSQL instance inside private subnets
+# resource "aws_db_instance" "postgres_instance" {
+#   provider               = aws.at-root
+#   allocated_storage      = 20
+#   engine                 = "postgres"
+#   engine_version         = "15" # Latest stable PostgreSQL version; adjust as needed
+#   instance_class         = "db.t3.micro"
+#   db_name                = "mydatabase"
+#   username               = "mydbadmin"
+#   password               = random_password.rds_admin_password.result
+#   parameter_group_name   = "default.postgres15"
+#   skip_final_snapshot    = true
+#   publicly_accessible    = false
+#   vpc_security_group_ids = [aws_security_group.rds_sg.id]
+#   db_subnet_group_name   = aws_db_subnet_group.private_subnet_group.name
+#   identifier             = "my-rds-postgres-instance"
 
-  tags = {
-    Name = "MyPrivatePostgresRDS"
-  }
-}
-
+#   tags = {
+#     Name = "MyPrivatePostgresRDS"
+#   }
+# }
