@@ -10,6 +10,7 @@ resource "aws_iam_role" "veeam_for_aws_cross_account_role" {
         "Action" : "sts:AssumeRole",
         "Principal" : {
           "Service" : [
+            "backup.amazonaws.com",
             "batchoperations.s3.amazonaws.com",
             "ec2.amazonaws.com"
           ]
@@ -19,7 +20,7 @@ resource "aws_iam_role" "veeam_for_aws_cross_account_role" {
         "Effect" : "Allow",
         "Action" : "sts:AssumeRole",
         "Principal" : {
-          "AWS" : "arn:aws:iam::528775625753:role/aws-appliance-veeam-VeeamImpersonationRoleV1-AI9KMCR6T5BK" ## Replace with Veeam created role
+          "AWS" : "arn:aws:iam::528775625753:role/aws-appliance-veeam-VeeamImpersonationRoleV1-AI9KMCR6T5BK"
         }
       }
     ]
@@ -27,10 +28,10 @@ resource "aws_iam_role" "veeam_for_aws_cross_account_role" {
   description = "IAM role for for Veeam for AWS cross-account access"
 }
 
-## Policy for Worker
-resource "aws_iam_policy" "worker_backup_account" {
+## Policys for Worker
+resource "aws_iam_policy" "worker_backup_account_1" {
   provider    = aws.at-root
-  name        = "veeam-worker-cross-account-policy"
+  name        = "veeam-worker-cross-account-policy-1"
   description = "Policy for Worker in another account be able to make backups"
 
   policy = jsonencode({
@@ -39,12 +40,107 @@ resource "aws_iam_policy" "worker_backup_account" {
       {
         "Effect" : "Allow",
         "Action" : [
+          "backup:UpdateRegionSettings",
+          "dynamodb:DeleteTable",
+          "dynamodb:DescribeContinuousBackups",
+          "dynamodb:DescribeTable",
+          "dynamodb:DescribeTimeToLive",
+          "dynamodb:ListTables",
+          "dynamodb:ListTagsOfResource",
+          "dynamodb:RestoreTableFromAwsBackup",
+          "dynamodb:StartAwsBackupJob",
+          "dynamodb:TagResource",
+          "dynamodb:UpdateContinuousBackups",
+          "dynamodb:UpdateTable",
+          "dynamodb:UpdateTimeToLive",
+          "ec2:AllocateAddress",
+          "ec2:AssociateIamInstanceProfile",
+          "ec2:DescribeDhcpOptions",
+          "ec2:DescribeVpcAttribute",
+          "ec2:ModifyNetworkInterfaceAttribute",
+          "iam:CreateServiceLinkedRole",
+          "kms:Decrypt",
+          "kms:Encrypt",
+          "rds:CreateDbInstance",
+          "rds:CreateTenantDatabase",
+          "rds:DeleteDbCluster",
+          "rds:DeleteDBInstance",
+          "rds:DescribeAccountAttributes",
+          "rds:DescribeDbClusterParameterGroups",
+          "rds:DescribeDbClusterParameters",
+          "rds:DescribeDBEngineVersions",
+          "rds:DescribeDBParameterGroups",
+          "rds:DescribeOptionGroups",
+          "rds:DescribeOrderableDbInstanceOptions",
+          "rds:ModifyDbCluster",
+          "rds:RestoreDbClusterFromSnapshot",
+          "rds:RestoreDBInstanceFromDBSnapshot",
+          "s3:CreateJob",
+          "s3:DeleteObject",
+          "s3:DeleteObjectVersion",
+          "s3:DescribeJob",
+          "s3:GetBucketLocation",
+          "s3:GetBucketObjectLockConfiguration",
+          "s3:GetBucketVersioning",
+          "s3:GetObject",
+          "s3:GetObjectRetention",
+          "s3:GetObjectVersion",
+          "s3:ListAllMyBuckets",
+          "s3:ListBucket",
+          "s3:ListBucketVersions",
+          "s3:PutObject",
+          "s3:PutObjectRetention",
+          "s3:RestoreObject"
+        ],
+        "Resource" : "*"
+      }
+    ]
+  })
+}
+
+## Attach the policy 1 to the role
+resource "aws_iam_role_policy_attachment" "worker_backup_account_attachment_1" {
+  provider   = aws.at-root
+  role       = aws_iam_role.veeam_for_aws_cross_account_role.name
+  policy_arn = aws_iam_policy.worker_backup_account_1.arn
+}
+
+
+resource "aws_iam_policy" "worker_backup_account_2" {
+  provider    = aws.at-root
+  name        = "veeam-worker-cross-account-policy-2"
+  description = "Policy for Worker in another account be able to make backups"
+
+  policy = jsonencode({
+    "Version" : "2012-10-17",
+    "Statement" : [
+      {
+        "Effect" : "Allow",
+        "Action" : [
+          "backup-storage:MountCapsule",
+          "backup:CopyFromBackupVault",
+          "backup:CopyIntoBackupVault",
+          "backup:CreateBackupVault",
+          "backup:DeleteBackupVault",
+          "backup:DeleteRecoveryPoint",
+          "backup:DescribeBackupJob",
+          "backup:DescribeCopyJob",
+          "backup:DescribeRecoveryPoint",
+          "backup:DescribeRegionSettings",
+          "backup:DescribeRestoreJob",
+          "backup:ListBackupVaults",
+          "backup:ListRecoveryPointsByBackupVault",
+          "backup:ListTags",
+          "backup:StartBackupJob",
+          "backup:StartCopyJob",
+          "backup:StartRestoreJob",
+          "backup:StopBackupJob",
+          "backup:TagResource",
+          "backup:UntagResource",
           "ebs:ListChangedBlocks",
           "ebs:ListSnapshotBlocks",
-          "ec2:AllocateAddress",
           "ec2:AssignPrivateIpAddresses",
           "ec2:AssociateAddress",
-          "ec2:AssociateIamInstanceProfile",
           "ec2:AttachNetworkInterface",
           "ec2:AttachVolume",
           "ec2:AuthorizeSecurityGroupEgress",
@@ -67,7 +163,6 @@ resource "aws_iam_policy" "worker_backup_account" {
           "ec2:DescribeAddresses",
           "ec2:DescribeAvailabilityZones",
           "ec2:DescribeConversionTasks",
-          "ec2:DescribeDhcpOptions",
           "ec2:DescribeImages",
           "ec2:DescribeInstanceAttribute",
           "ec2:DescribeInstances",
@@ -75,6 +170,7 @@ resource "aws_iam_policy" "worker_backup_account" {
           "ec2:DescribeInstanceTypes",
           "ec2:DescribeInternetGateways",
           "ec2:DescribeKeyPairs",
+          "ec2:DescribeNetworkInterfaceAttribute",
           "ec2:DescribeNetworkInterfaces",
           "ec2:DescribeRegions",
           "ec2:DescribeRouteTables",
@@ -85,14 +181,12 @@ resource "aws_iam_policy" "worker_backup_account" {
           "ec2:DescribeTags",
           "ec2:DescribeVolumeAttribute",
           "ec2:DescribeVolumes",
-          "ec2:DescribeVpcAttribute",
           "ec2:DescribeVpcEndpoints",
           "ec2:DescribeVpcs",
           "ec2:DetachVolume",
           "ec2:DisassociateAddress",
           "ec2:GetEbsDefaultKmsKeyId",
           "ec2:ModifyInstanceAttribute",
-          "ec2:ModifyNetworkInterfaceAttribute",
           "ec2:ModifySnapshotAttribute",
           "ec2:ModifyVolume",
           "ec2:RevokeSecurityGroupEgress",
@@ -107,6 +201,30 @@ resource "aws_iam_policy" "worker_backup_account" {
           "ec2messages:GetEndpoint",
           "ec2messages:GetMessages",
           "ec2messages:SendReply",
+          "elasticfilesystem:Backup",
+          "elasticfilesystem:CreateAccessPoint",
+          "elasticfilesystem:CreateFileSystem",
+          "elasticfilesystem:CreateMountTarget",
+          "elasticfilesystem:DeleteAccessPoint",
+          "elasticfilesystem:DeleteFileSystem",
+          "elasticfilesystem:DeleteMountTarget",
+          "elasticfilesystem:DescribeAccessPoints",
+          "elasticfilesystem:DescribeBackupPolicy",
+          "elasticfilesystem:DescribeFileSystemPolicy",
+          "elasticfilesystem:DescribeFileSystems",
+          "elasticfilesystem:DescribeLifecycleConfiguration",
+          "elasticfilesystem:DescribeMountTargets",
+          "elasticfilesystem:DescribeMountTargetSecurityGroups",
+          "elasticfilesystem:DescribeReplicationConfigurations",
+          "elasticfilesystem:DescribeTags",
+          "elasticfilesystem:ListTagsForResource",
+          "elasticfilesystem:PutBackupPolicy",
+          "elasticfilesystem:PutFileSystemPolicy",
+          "elasticfilesystem:PutLifecycleConfiguration",
+          "elasticfilesystem:Restore",
+          "elasticfilesystem:TagResource",
+          "elasticfilesystem:UntagResource",
+          "elasticfilesystem:UpdateFileSystem",
           "events:DeleteRule",
           "events:DescribeRule",
           "events:ListTargetsByRule",
@@ -117,7 +235,6 @@ resource "aws_iam_policy" "worker_backup_account" {
           "iam:AttachRolePolicy",
           "iam:CreateInstanceProfile",
           "iam:CreateRole",
-          "iam:CreateServiceLinkedRole",
           "iam:DeleteInstanceProfile",
           "iam:DeleteRole",
           "iam:DeleteRolePolicy",
@@ -139,9 +256,7 @@ resource "aws_iam_policy" "worker_backup_account" {
           "kinesis:DescribeStream",
           "kinesis:PutRecord",
           "kms:CreateGrant",
-          "kms:Decrypt",
           "kms:DescribeKey",
-          "kms:Encrypt",
           "kms:GenerateDataKeyWithoutPlaintext",
           "kms:GetKeyPolicy",
           "kms:ListAliases",
@@ -152,49 +267,19 @@ resource "aws_iam_policy" "worker_backup_account" {
           "rds:CopyDBClusterSnapshot",
           "rds:CopyDBSnapshot",
           "rds:CreateDBClusterSnapshot",
-          "rds:CreateDbInstance",
           "rds:CreateDBSnapshot",
-          "rds:CreateTenantDatabase",
-          "rds:DeleteDbCluster",
           "rds:DeleteDBClusterSnapshot",
-          "rds:DeleteDBInstance",
           "rds:DeleteDBSnapshot",
-          "rds:DescribeAccountAttributes",
-          "rds:DescribeDbClusterParameterGroups",
-          "rds:DescribeDbClusterParameters",
           "rds:DescribeDBClusters",
           "rds:DescribeDBClusterSnapshots",
-          "rds:DescribeDBEngineVersions",
           "rds:DescribeDBInstances",
-          "rds:DescribeDBParameterGroups",
           "rds:DescribeDBSnapshots",
           "rds:DescribeDBSubnetGroups",
-          "rds:DescribeOptionGroups",
-          "rds:DescribeOrderableDbInstanceOptions",
           "rds:ListTagsForResource",
-          "rds:ModifyDbCluster",
           "rds:ModifyDBClusterSnapshotAttribute",
           "rds:ModifyDBInstance",
           "rds:ModifyDBSnapshotAttribute",
           "rds:RemoveTagsFromResource",
-          "rds:RestoreDbClusterFromSnapshot",
-          "rds:RestoreDBInstanceFromDBSnapshot",
-          "s3:CreateJob",
-          "s3:DeleteObject",
-          "s3:DeleteObjectVersion",
-          "s3:DescribeJob",
-          "s3:GetBucketLocation",
-          "s3:GetBucketObjectLockConfiguration",
-          "s3:GetBucketVersioning",
-          "s3:GetObject",
-          "s3:GetObjectRetention",
-          "s3:GetObjectVersion",
-          "s3:ListAllMyBuckets",
-          "s3:ListBucket",
-          "s3:ListBucketVersions",
-          "s3:PutObject",
-          "s3:PutObjectRetention",
-          "s3:RestoreObject",
           "servicequotas:ListServiceQuotas",
           "sns:CreateTopic",
           "sns:DeleteTopic",
@@ -239,11 +324,11 @@ resource "aws_iam_policy" "worker_backup_account" {
   })
 }
 
-## Attach the policy to the role
+## Attach the policy 2 to the role
 resource "aws_iam_role_policy_attachment" "worker_backup_account_attachment" {
   provider   = aws.at-root
   role       = aws_iam_role.veeam_for_aws_cross_account_role.name
-  policy_arn = aws_iam_policy.worker_backup_account.arn
+  policy_arn = aws_iam_policy.worker_backup_account_2.arn
 }
 
 

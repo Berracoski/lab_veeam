@@ -14,7 +14,7 @@ output "cross_account_role_arn" {
   value       = aws_iam_role.veeam_for_aws_cross_account_role.arn
 }
 
-output "db_endpoint" {
-  description = "The endpoint address of the RDS PostgreSQL instance"
-  value       = aws_db_instance.postgres_instance.endpoint
-}
+# output "db_endpoint" {
+#   description = "The endpoint address of the RDS PostgreSQL instance"
+#   value       = aws_db_instance.postgres_instance.endpoint
+# }

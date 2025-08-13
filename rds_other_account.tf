@@ -110,3 +110,21 @@
 #     Name = "MyPrivatePostgresRDS"
 #   }
 # }
+
+# Create a DynamoDB table
+resource "aws_dynamodb_table" "veeam_lab_table" {
+  provider     = aws.at-root
+  name         = "veeam_lab_table"
+  billing_mode = "PAY_PER_REQUEST" # On-demand capacity
+
+  hash_key = "id"
+
+  attribute {
+    name = "id"
+    type = "S"
+  }
+
+  tags = {
+    Name = "Veeam-LAB DynamoDB Table"
+  }
+}
